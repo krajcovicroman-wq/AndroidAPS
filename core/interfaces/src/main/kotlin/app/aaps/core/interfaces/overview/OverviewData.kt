@@ -60,6 +60,8 @@ interface OverviewData {
     var absoluteBasalGraphSeries: SeriesData
 
     var temporaryTargetSeries: SeriesData
+    //MP Tsunami graph
+    var tsunamiSeries: SeriesData
 
     var maxIAValue: Double
     val actScale: Scale

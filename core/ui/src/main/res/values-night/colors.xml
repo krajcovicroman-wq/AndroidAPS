@@ -302,4 +302,7 @@
     <!--    Automations-->
     <color name="actionColor">#FF8B00</color>
 
+    <!-- Tsunami Dark Theme -->
+    <color name="colorTsunamiButton">#00D38D</color>
+    <color name="tsunamiMint">#00D38D</color>
 </resources>

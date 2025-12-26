@@ -6,6 +6,7 @@ import app.aaps.plugins.aps.loop.LoopPlugin
 import app.aaps.plugins.aps.openAPSAMA.OpenAPSAMAPlugin
 import app.aaps.plugins.aps.openAPSAutoISF.OpenAPSAutoISFPlugin
 import app.aaps.plugins.aps.openAPSSMB.OpenAPSSMBPlugin
+import app.aaps.plugins.aps.tsunami.TsunamiPlugin
 import app.aaps.plugins.automation.AutomationPlugin
 import app.aaps.plugins.configuration.configBuilder.ConfigBuilderPlugin
 import app.aaps.plugins.configuration.maintenance.MaintenancePlugin
@@ -72,6 +73,8 @@ import dagger.Module
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
 import info.nightscout.pump.combov2.ComboV2Plugin
+import app.aaps.plugins.insulin.InsulinLyumjevU100PDPlugin
+import app.aaps.plugins.insulin.InsulinLyumjevU200PDPlugin
 import javax.inject.Qualifier
 
 @Suppress("unused")
@@ -119,6 +122,20 @@ abstract class PluginsListModule {
     @IntoMap
     @IntKey(42)
     abstract fun bindInsulinLyumjevPlugin(plugin: InsulinLyumjevPlugin): PluginBase
+
+    //MP Added Lyumjev U100 strings
+    @Binds
+    @AllConfigs
+    @IntoMap
+    @IntKey(43)
+    abstract fun bindInsulinLyumjevU100PDPlugin(plugin: InsulinLyumjevU100PDPlugin): PluginBase
+
+    //MP Added Lyumjev U200 strings
+    @Binds
+    @AllConfigs
+    @IntoMap
+    @IntKey(44)
+    abstract fun bindInsulinLyumjevU200PDPlugin(plugin: InsulinLyumjevU200PDPlugin): PluginBase
 
     @Binds
     @AllConfigs
@@ -251,6 +268,12 @@ abstract class PluginsListModule {
     @IntoMap
     @IntKey(225)
     abstract fun bindOpenAPSAutoISFPlugin(plugin: OpenAPSAutoISFPlugin): PluginBase
+
+    @Binds
+    @APS
+    @IntoMap
+    @IntKey(229)
+    abstract fun bindTsunamiPlugin(plugin: TsunamiPlugin): PluginBase
 
     @Binds
     @AllConfigs

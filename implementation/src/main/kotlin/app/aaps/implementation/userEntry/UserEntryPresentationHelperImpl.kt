@@ -37,6 +37,8 @@ class UserEntryPresentationHelperImpl @Inject constructor(
         Action.ColorGroup.Careportal       -> app.aaps.core.ui.R.color.high
         Action.ColorGroup.Pump             -> app.aaps.core.ui.R.color.loopDisconnected
         Action.ColorGroup.Aaps             -> app.aaps.core.ui.R.color.defaultText
+        Action.ColorGroup.Tsunami          -> app.aaps.core.ui.R.color.tsunamiMint
+        else                               -> app.aaps.core.ui.R.color.defaultText
         // else                               -> app.aaps.core.ui.R.color.defaultText
     }
 
@@ -116,10 +118,13 @@ class UserEntryPresentationHelperImpl @Inject constructor(
         Sources.BgFragment          -> R.drawable.ic_aaps
         Sources.Ottai               -> R.drawable.ic_ottai
         Sources.SyaiTag             -> R.drawable.ic_syai_tag
+        Sources.TsunamiDialog       -> R.drawable.ic_tsunami
     }
 
     override fun actionToColoredString(action: Action): Spanned = when (action) {
         Action.TREATMENT -> HtmlHelper.fromHtml(coloredAction(Action.BOLUS) + " + " + coloredAction(Action.CARBS))
+        Action.TSUNAMI_BOLUS -> HtmlHelper.fromHtml(coloredAction(Action.TSUNAMI) + " + " + coloredAction(Action.BOLUS))
+        Action.CANCEL_TSUNAMI_BOLUS -> HtmlHelper.fromHtml(coloredAction(Action.CANCEL_TSUNAMI) + " + " + coloredAction(Action.BOLUS))
         else             -> HtmlHelper.fromHtml(coloredAction(action))
     }
 

@@ -21,10 +21,12 @@ import androidx.annotation.AttrRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.PopupMenu
 import androidx.gridlayout.widget.GridLayout
+import app.aaps.core.interfaces.aps.APSResult
 import app.aaps.core.interfaces.aps.Loop
 import app.aaps.core.interfaces.configuration.Config
 import app.aaps.core.interfaces.logging.AAPSLogger
 import app.aaps.core.interfaces.overview.OverviewMenus
+import app.aaps.core.interfaces.plugin.ActivePlugin
 import app.aaps.core.interfaces.resources.ResourceHelper
 import app.aaps.core.interfaces.rx.bus.RxBus
 import app.aaps.core.interfaces.rx.events.EventRefreshOverview
@@ -44,7 +46,8 @@ class OverviewMenusImpl @Inject constructor(
     private val preferences: Preferences,
     private val rxBus: RxBus,
     private val config: Config,
-    private val loop: Loop
+    private val loop: Loop,
+    private val activePlugin: ActivePlugin
 ) : OverviewMenus {
 
     enum class CharTypeData(
@@ -71,6 +74,7 @@ class OverviewMenusImpl @Inject constructor(
         DEVSLOPE(R.string.overview_show_deviation_slope, app.aaps.core.ui.R.attr.devSlopePosColor, app.aaps.core.ui.R.attr.menuTextColor, primary = false, secondary = true, shortnameId = R.string.devslope_shortname),
         HR(R.string.overview_show_heartRate, app.aaps.core.ui.R.attr.heartRateColor, app.aaps.core.ui.R.attr.menuTextColor, primary = false, secondary = true, shortnameId = R.string.heartRate_shortname),
         STEPS(R.string.overview_show_steps, app.aaps.core.ui.R.attr.stepsColor, app.aaps.core.ui.R.attr.menuTextColor, primary = false, secondary = true, shortnameId = R.string.steps_shortname),
+        TSU(R.string.overview_show_tsunami, app.aaps.core.ui.R.attr.icTsunamiColor, app.aaps.core.ui.R.attr.menuTextColor, primary = true, secondary = false, shortnameId = R.string.tsunami_shortname)
     }
 
     companion object {
@@ -103,11 +107,11 @@ class OverviewMenusImpl @Inject constructor(
                             it.removeAt(i)
                     }
                 }
-            else
+            else //MP List below was extended by a "false" in each row as CharType in OverviewMenus.kt has been extended by 'TSU' entry for Tsunami (15 entries in total)
                 listOf(
-                    arrayOf(true, true, true, false, false, false, false, false, false, false, false, false, false, false),
-                    arrayOf(false, false, false, false, true, false, false, false, false, false, false, false, false, false),
-                    arrayOf(false, false, false, false, false, true, false, false, false, false, false, false, false, false)
+                    arrayOf(true, true, true, false, false, false, false, false, false, false, false, false, false, false, false),
+                    arrayOf(false, false, false, false, true, false, false, false, false, false, false, false, false, false, false),
+                    arrayOf(false, false, false, false, false, true, false, false, false, false, false, false, false, false, false)
                 )
 
     @Synchronized
@@ -189,10 +193,12 @@ class OverviewMenusImpl @Inject constructor(
             }
             itemRow++
 
-            // instert secondary items
+            // insert secondary items
+            val tsunamiIsActiveAPS = (activePlugin.activeAPS.algorithm == APSResult.Algorithm.TSUNAMI)
             CharTypeData.entries.forEach { m ->
                 var insert = true
                 if (m == CharTypeData.DEVSLOPE) insert = config.isDev()
+                if (m == CharTypeData.TSU) insert = tsunamiIsActiveAPS
                 if (insert && m.secondary) {
                     createCustomMenuItemView(v.context, m, itemRow, layout, false)
                     itemRow++

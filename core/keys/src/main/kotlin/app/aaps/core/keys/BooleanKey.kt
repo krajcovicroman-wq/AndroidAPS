@@ -112,4 +112,12 @@ enum class BooleanKey(
     WearCustomWatchfaceAuthorization(key = "wear_custom_watchface_autorization", defaultValue = false),
     WearNotifyOnSmb(key = "wear_notifySMB", defaultValue = true),
     WearBroadcastData(key = "wear_broadcast_data", defaultValue = false),
+
+    //Tsunami
+    TsuSMBscaling(key = "key_tsu_SMB_scaling", defaultValue = false),
+    EnableWave(key = "key_enable_wave_mode", defaultValue = false),
+    WaveUseSMBCap(key = "key_use_wave_smbcap", defaultValue = false, dependency = EnableWave),
+    HideTsunamiButton(key = "key_hide_tsunami_button", defaultValue = false, dependency = EnableWave),
+    WaveSMBCapScaling(key = "key_wave_SMB_scaling", defaultValue = false, dependency = WaveUseSMBCap),
+
 }

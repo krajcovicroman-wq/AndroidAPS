@@ -28,6 +28,7 @@ import app.aaps.core.data.model.GlucoseUnit
 import app.aaps.core.data.pump.defs.PumpType
 import app.aaps.core.data.ue.Action
 import app.aaps.core.data.ue.Sources
+import app.aaps.core.interfaces.aps.APSResult
 import app.aaps.core.interfaces.aps.IobTotal
 import app.aaps.core.interfaces.aps.Loop
 import app.aaps.core.interfaces.automation.Automation
@@ -69,6 +70,7 @@ import app.aaps.core.interfaces.rx.events.EventRefreshOverview
 import app.aaps.core.interfaces.rx.events.EventScale
 import app.aaps.core.interfaces.rx.events.EventTempBasalChange
 import app.aaps.core.interfaces.rx.events.EventTempTargetChange
+import app.aaps.core.interfaces.rx.events.EventTsunamiModeChange
 import app.aaps.core.interfaces.rx.events.EventUpdateOverviewCalcProgress
 import app.aaps.core.interfaces.rx.events.EventUpdateOverviewGraph
 import app.aaps.core.interfaces.rx.events.EventUpdateOverviewIobCob
@@ -250,6 +252,7 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
         binding.buttonsLayout.calibrationButton.setOnClickListener(this)
         binding.buttonsLayout.cgmButton.setOnClickListener(this)
         binding.buttonsLayout.insulinButton.setOnClickListener(this)
+        binding.buttonsLayout.tsunamiButton.setOnClickListener(this)
         binding.buttonsLayout.carbsButton.setOnClickListener(this)
         binding.buttonsLayout.quickWizardButton.setOnClickListener(this)
         binding.buttonsLayout.quickWizardButton.setOnLongClickListener(this)
@@ -351,7 +354,10 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
             .toObservable(EventTempBasalChange::class.java)
             .observeOn(aapsSchedulers.io)
             .subscribe({ updateTemporaryBasal() }, fabricPrivacy::logException)
-
+        disposable += rxBus
+            .toObservable(EventTsunamiModeChange::class.java)
+            .observeOn(aapsSchedulers.io)
+            .subscribe({ updateTsunamiButton() }, fabricPrivacy::logException)
         refreshLoop = Runnable {
             refreshAll()
             handler.postDelayed(refreshLoop, 60 * 1000L)
@@ -380,6 +386,7 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
         processAps()
         updateProfile()
         updateTemporaryTarget()
+        updateTsunamiButton()
     }
 
     @Synchronized
@@ -408,6 +415,11 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
                     activity,
                     ProtectionCheck.Protection.BOLUS,
                     UIRunnable { if (isAdded) uiInteraction.runInsulinDialog(childFragmentManager) })
+
+                R.id.tsunami_button -> protectionCheck.queryProtection(
+                    activity,
+                    ProtectionCheck.Protection.BOLUS,
+                    UIRunnable { if (isAdded) uiInteraction.runTsunamiDialog(childFragmentManager) })
 
                 R.id.quick_wizard_button -> protectionCheck.queryProtection(activity, ProtectionCheck.Protection.BOLUS, UIRunnable { if (isAdded) onClickQuickWizard() })
                 R.id.carbs_button        -> protectionCheck.queryProtection(
@@ -585,6 +597,9 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
             binding.buttonsLayout.wizardButton.visibility = (!loop.isDisconnected && pump.isInitialized() && !pump.isSuspended() && profile != null
                 && preferences.get(BooleanKey.OverviewShowWizardButton)).toVisibility()
             binding.buttonsLayout.insulinButton.visibility = (profile != null && preferences.get(BooleanKey.OverviewShowInsulinButton)).toVisibility()
+            //MP Tsunami button visibility if Tsunami is selected as APS
+            val tsunamiIsActiveAPS = (activePlugin.activeAPS.algorithm == APSResult.Algorithm.TSUNAMI)
+            binding.buttonsLayout.tsunamiButton.visibility = (tsunamiIsActiveAPS && !loop.isDisconnected&& pump.isInitialized() && !pump.isSuspended() && profile != null && !preferences.get(BooleanKey.HideTsunamiButton)).toVisibility()
             if (loop.isDisconnected || !pump.isInitialized() || pump.isSuspended()) {
                 setRibbon(
                     binding.buttonsLayout.insulinButton,
@@ -1034,6 +1049,39 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
         }
     }
 
+    @SuppressLint("SetTextI18n")
+    fun updateTsunamiButton() {
+        val tsunamiMode = persistenceLayer.getTsunamiActiveAt(dateUtil.now())
+        runOnUiThread {
+            _binding ?: return@runOnUiThread
+            if (tsunamiMode != null) {
+                val remaining = tsunamiMode.end - dateUtil.now()
+                if (tsunamiMode.tsunamiMode == 2 && remaining > 0) {
+                    setRibbon(
+                        binding.buttonsLayout.tsunamiButton,
+                        app.aaps.core.ui.R.attr.ribbonTextWarningColor,
+                        app.aaps.core.ui.R.attr.ribbonWarningColor,
+                        dateUtil.untilString(tsunamiMode.end, rh)
+                    )
+                } else {
+                    setRibbon(
+                        binding.buttonsLayout.tsunamiButton,
+                        app.aaps.core.ui.R.attr.icTsunamiColor,
+                        app.aaps.core.ui.R.attr.ribbonDefaultColor,
+                        "TSUNAMI"
+                    )
+                }
+            } else {
+                setRibbon(
+                    binding.buttonsLayout.tsunamiButton,
+                    app.aaps.core.ui.R.attr.icTsunamiColor,
+                    app.aaps.core.ui.R.attr.ribbonDefaultColor,
+                    "TSUNAMI"
+                )
+            }
+        }
+    }
+
     private fun setRibbon(view: TextView, attrResText: Int, attrResBack: Int, text: String) {
         with(view) {
             setText(text)
@@ -1054,6 +1102,9 @@ class OverviewFragment : DaggerFragment(), View.OnClickListener, OnLongClickList
             preferences.get(UnitDoubleKey.OverviewLowMark),
             preferences.get(UnitDoubleKey.OverviewHighMark)
         )
+        //MP Tsunami graph
+        if (menuChartSettings[0][OverviewMenus.CharType.TSU.ordinal])
+            graphData.addTsunamiArea()
         graphData.addBgReadings(menuChartSettings[0][OverviewMenus.CharType.PRE.ordinal], context)
         graphData.addBucketedData()
         graphData.addTreatments(context)

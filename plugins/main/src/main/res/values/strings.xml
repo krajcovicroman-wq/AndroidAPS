@@ -326,4 +326,8 @@
     <string name="steps_shortname">STEPS</string>
     <string name="simple_mode_enabled">Simple mode enabled</string>
 
+    <!-- Tsunami OverviewMenusImpl.kt -->
+    <string name="overview_show_tsunami">Tsunami</string>
+    <string name="tsunami_shortname">TSU</string>
+    <string name="key_hide_tsunami_button" translatable="false">hide_tsunami_button</string>
 </resources>

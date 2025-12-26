@@ -641,4 +641,12 @@
     <string name="rate_percent_duration">Rate: %1$.2f U/h (%2$.2f%%) Duration: %3$d min</string>
     <string name="percent_rate_duration_formatted"><![CDATA[<b>Rate</b>: %1$.2f%% (%2$.2f U/h)<br><b>Duration</b>: %3$d min<br>]]></string>
     <string name="rate_percent_duration_formatted"><![CDATA[<b>Rate</b>: %1$.2f U/h (%2$.2f%%) <br><b>Duration</b>: %3$d min<br>]]></string>
+
+    <!-- Tsunami -->
+    <string name="overview_tsunami_label">Tsunami</string>
+    <!-- Tsunami (for TranslatorImpl.kt) -->
+    <string name="uel_tsunami">TSUNAMI</string>
+    <string name="uel_tsunami_bolus">TSUNAMI+BOLUS</string>
+    <string name="uel_cancel_tsunami">CANCEL TSUNAMI</string>
+    <string name="uel_cancel_tsunami_bolus">CANCEL TSUNAMI+BOLUS</string>
 </resources>

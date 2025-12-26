@@ -311,6 +311,8 @@ class HistoryBrowseActivity : TranslatedDaggerAppCompatActivity() {
             preferences.get(UnitDoubleKey.OverviewLowMark),
             preferences.get(UnitDoubleKey.OverviewHighMark)
         )
+        if (menuChartSettings[0][OverviewMenus.CharType.TSU.ordinal])
+            graphData.addTsunamiArea()
         graphData.addBgReadings(menuChartSettings[0][OverviewMenus.CharType.PRE.ordinal], context)
         graphData.addBucketedData()
         graphData.addTreatments(context)

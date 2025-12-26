@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 25,
-    "identityHash": "646d4c2bce8c76a165895edc50b9b696",
+    "identityHash": "b787411488caa080811225d9f6b4f4df",
     "entities": [
       {
         "tableName": "apsResults",
@@ -3832,72 +3832,12 @@
         "foreignKeys": []
       },
       {
-        "tableName": "stepsCount",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `duration` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL, `steps5min` INTEGER NOT NULL, `steps10min` INTEGER NOT NULL, `steps15min` INTEGER NOT NULL, `steps30min` INTEGER NOT NULL, `steps60min` INTEGER NOT NULL, `steps180min` INTEGER NOT NULL, `device` TEXT NOT NULL, `utcOffset` INTEGER NOT NULL, `version` INTEGER NOT NULL, `dateCreated` INTEGER NOT NULL, `isValid` INTEGER NOT NULL, `referenceId` INTEGER, `nightscoutSystemId` TEXT, `nightscoutId` TEXT, `pumpType` TEXT, `pumpSerial` TEXT, `temporaryId` INTEGER, `pumpId` INTEGER, `startId` INTEGER, `endId` INTEGER)",
+        "tableName": "tsunami",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `version` INTEGER NOT NULL, `dateCreated` INTEGER NOT NULL, `isValid` INTEGER NOT NULL, `referenceId` INTEGER, `timestamp` INTEGER NOT NULL, `utcOffset` INTEGER NOT NULL, `duration` INTEGER NOT NULL, `tsunamiMode` INTEGER NOT NULL, `nightscoutSystemId` TEXT, `nightscoutId` TEXT, `pumpType` TEXT, `pumpSerial` TEXT, `temporaryId` INTEGER, `pumpId` INTEGER, `startId` INTEGER, `endId` INTEGER, FOREIGN KEY(`referenceId`) REFERENCES `tsunami`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "duration",
-            "columnName": "duration",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "timestamp",
-            "columnName": "timestamp",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "steps5min",
-            "columnName": "steps5min",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "steps10min",
-            "columnName": "steps10min",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "steps15min",
-            "columnName": "steps15min",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "steps30min",
-            "columnName": "steps30min",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "steps60min",
-            "columnName": "steps60min",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "steps180min",
-            "columnName": "steps180min",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "device",
-            "columnName": "device",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "utcOffset",
-            "columnName": "utcOffset",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -3924,6 +3864,30 @@
             "columnName": "referenceId",
             "affinity": "INTEGER",
             "notNull": false
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "utcOffset",
+            "columnName": "utcOffset",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "duration",
+            "columnName": "duration",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tsunamiMode",
+            "columnName": "tsunamiMode",
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "interfaceIDs_backing.nightscoutSystemId",
@@ -3982,31 +3946,70 @@
         },
         "indices": [
           {
-            "name": "index_stepsCount_id",
+            "name": "index_tsunami_id",
             "unique": false,
             "columnNames": [
               "id"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_stepsCount_id` ON `${TABLE_NAME}` (`id`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_tsunami_id` ON `${TABLE_NAME}` (`id`)"
           },
           {
-            "name": "index_stepsCount_timestamp",
+            "name": "index_tsunami_isValid",
+            "unique": false,
+            "columnNames": [
+              "isValid"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_tsunami_isValid` ON `${TABLE_NAME}` (`isValid`)"
+          },
+          {
+            "name": "index_tsunami_nightscoutId",
+            "unique": false,
+            "columnNames": [
+              "nightscoutId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_tsunami_nightscoutId` ON `${TABLE_NAME}` (`nightscoutId`)"
+          },
+          {
+            "name": "index_tsunami_referenceId",
+            "unique": false,
+            "columnNames": [
+              "referenceId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_tsunami_referenceId` ON `${TABLE_NAME}` (`referenceId`)"
+          },
+          {
+            "name": "index_tsunami_timestamp",
             "unique": false,
             "columnNames": [
               "timestamp"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_stepsCount_timestamp` ON `${TABLE_NAME}` (`timestamp`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_tsunami_timestamp` ON `${TABLE_NAME}` (`timestamp`)"
           }
         ],
-        "foreignKeys": []
+        "foreignKeys": [
+          {
+            "table": "tsunami",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "referenceId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '646d4c2bce8c76a165895edc50b9b696')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b787411488caa080811225d9f6b4f4df')"
     ]
   }
 }

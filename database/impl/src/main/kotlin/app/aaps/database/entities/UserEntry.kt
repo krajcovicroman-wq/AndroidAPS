@@ -113,6 +113,10 @@ data class UserEntry(
         EXIT_AAPS,
         PLUGIN_ENABLED,
         PLUGIN_DISABLED,
+        TSUNAMI,
+        CANCEL_TSUNAMI,
+        CANCEL_TSUNAMI_BOLUS,
+        TSUNAMI_BOLUS,
         UNKNOWN
         ;
     }
@@ -130,6 +134,7 @@ data class UserEntry(
         TempBasalDialog,
         CalibrationDialog,
         FillDialog,
+        TsunamiDialog,      //MP Tsunami
         BgCheck,
         SensorInsert,
         BatteryChange,
